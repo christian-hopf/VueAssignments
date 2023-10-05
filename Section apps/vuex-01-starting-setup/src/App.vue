@@ -1,5 +1,5 @@
 <template>
-  <base-container title="Vuex">
+  <base-container title="Vuex" v-if="this.$store.getters.authenticationStatus">
     <TheCounter />
     <FavoriteValue />
     <button @click="addOne">Add 10</button>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import BaseContainer from './components/BaseContainer.vue';
+import BaseContainer from './components/BaseContainer';
 import TheCounter from './components/TheCounter.vue';
 import ChangeCounter from './components/ChangeCounter.vue';
 import FavoriteValue from './components/FavoriteValue.vue';
@@ -32,7 +32,7 @@ export default {
   },
   methods: {
     addOne() {
-      this.$store.dispatch('increase', { value: 10 });
+      this.$store.dispatch('counter/increase', { value: 10 });
     },
   },
 };
