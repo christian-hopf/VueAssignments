@@ -63,6 +63,12 @@ export default {
       if (!this.formIsValid) {
         return;
       }
+      this.$store.dispatch('requests/contactCoach', {
+        coachId: this.$route.params.id,
+        email: this.email.value,
+        message: this.message.value,
+      });
+      this.$router.replace('/coaches');
     },
   },
 };
