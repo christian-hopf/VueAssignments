@@ -25,7 +25,10 @@ export default {
 
     context.commit('addCoach', { ...newCoach, id: userId });
   },
-  async fetchCoaches(context) {
+  async fetchCoaches(context, payload) {
+    if (!payload.refresh && !context.getters.shouldUpdate) {
+      return;
+    }
     const response = await fetch(
       'https://coachapp-b14a5-default-rtdb.firebaseio.com/coaches.json'
     );
@@ -47,5 +50,6 @@ export default {
       coaches.push(coach);
     }
     context.commit('loadCoaches', coaches);
+    context.commit('setFetchTimestamp');
   },
 };

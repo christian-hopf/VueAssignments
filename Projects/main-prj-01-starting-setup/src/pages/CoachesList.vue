@@ -1,34 +1,41 @@
 <template>
-  <h2>Coaches</h2>
-  <section>
-    <h2>Filter Controls</h2>
-    <coach-filter @update-filter="setFilters"></coach-filter>
-  </section>
-  <section>
-    <base-card>
-      <div class="controls">
-        <base-button mode="outline" @click="loadCoaches">Refresh</base-button>
-        <base-button v-if="!isLoading && !isCoach" link to="/register">
-          Register as a Coach
-        </base-button>
-      </div>
-      <div v-if="isLoading">
-        <base-spinner></base-spinner>
-      </div>
-      <ul v-else-if="hasCoaches">
-        <coach-item
-          v-for="coach in filteredCoaches"
-          :key="coach.id"
-          :id="coach.id"
-          :firstName="coach.firstName"
-          :lastName="coach.lastName"
-          :rate="coach.hourlyRate"
-          :areas="coach.areas"
-        ></coach-item>
-      </ul>
-      <h3 v-else>No coaches found</h3>
-    </base-card>
-  </section>
+  <div>
+    <base-dialog :show="!!error" title="Error" @close="handleError">
+      <p>{{ error }}</p>
+    </base-dialog>
+    <h2>Coaches</h2>
+    <section>
+      <h2>Filter Controls</h2>
+      <coach-filter @update-filter="setFilters"></coach-filter>
+    </section>
+    <section>
+      <base-card>
+        <div class="controls">
+          <base-button mode="outline" @click="loadCoaches(true)"
+            >Refresh</base-button
+          >
+          <base-button v-if="!isLoading && !isCoach" link to="/register">
+            Register as a Coach
+          </base-button>
+        </div>
+        <div v-if="isLoading">
+          <base-spinner></base-spinner>
+        </div>
+        <ul v-else-if="hasCoaches">
+          <coach-item
+            v-for="coach in filteredCoaches"
+            :key="coach.id"
+            :id="coach.id"
+            :firstName="coach.firstName"
+            :lastName="coach.lastName"
+            :rate="coach.hourlyRate"
+            :areas="coach.areas"
+          ></coach-item>
+        </ul>
+        <h3 v-else>No coaches found</h3>
+      </base-card>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -81,16 +88,21 @@ export default {
     setFilters(updatedFilters) {
       this.activeFilters = updatedFilters;
     },
-    async loadCoaches() {
+    async loadCoaches(refresh = false) {
       this.isLoading = true;
       try {
         // dispatch returns a promise, use async and await to set loading to false
         // as soon as the coaches are finished loading
-        await this.$store.dispatch('coaches/fetchCoaches');
+        await this.$store.dispatch('coaches/fetchCoaches', {
+          refresh: refresh,
+        });
       } catch (error) {
         this.error = error.message || 'Something went wrong, try again later';
       }
       this.isLoading = false;
+    },
+    handleError() {
+      this.error = null;
     },
   },
 };
