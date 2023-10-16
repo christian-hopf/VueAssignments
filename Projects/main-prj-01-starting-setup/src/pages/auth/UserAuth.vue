@@ -1,24 +1,33 @@
 <template>
-  <base-card>
-    <form @submit.prevent="submitForm">
-      <div class="form-control">
-        <label for="email">Email</label>
-        <input type="email" id="email" v-model.trim="email" />
-      </div>
-      <div class="form-control">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model="password" />
-      </div>
-      <p v-if="!formIsValid">
-        Please enter a valid email and password (password must be at least 6
-        characters).
-      </p>
-      <base-button>{{ submitButtonText }}</base-button>
-      <base-button type="button" mode="flat" @click="switchMode">{{
-        switchModeButtonText
-      }}</base-button>
-    </form>
-  </base-card>
+  <div>
+    <base-dialog :show="!!error" title="Error" @close="handleError">
+      <p>{{ error }}</p>
+    </base-dialog>
+    <base-dialog :show="isLoading" title="Authenticating..." fixed>
+      <p>Authenticating...</p>
+      <base-spinner></base-spinner>
+    </base-dialog>
+    <base-card>
+      <form @submit.prevent="submitForm">
+        <div class="form-control">
+          <label for="email">Email</label>
+          <input type="email" id="email" v-model.trim="email" />
+        </div>
+        <div class="form-control">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model="password" />
+        </div>
+        <p v-if="!formIsValid">
+          Please enter a valid email and password (password must be at least 6
+          characters).
+        </p>
+        <base-button>{{ submitButtonText }}</base-button>
+        <base-button type="button" mode="flat" @click="switchMode">{{
+          switchModeButtonText
+        }}</base-button>
+      </form>
+    </base-card>
+  </div>
 </template>
 
 <script>
@@ -29,6 +38,8 @@ export default {
       password: '',
       formIsValid: true,
       mode: 'login',
+      isLoading: false,
+      error: null,
     };
   },
   computed: {
@@ -48,7 +59,7 @@ export default {
     },
   },
   methods: {
-    submitForm() {
+    async submitForm() {
       this.formIsValid = true;
       if (
         this.email === '' ||
@@ -58,14 +69,23 @@ export default {
         this.formIsValid = false;
         return;
       }
-      if (this.mode === 'login') {
-        return;
-      } else {
-        this.$store.dispatch('signUp', {
-          email: this.email,
-          password: this.password,
-        });
+
+      this.isLoading = true;
+      const authPayload = {
+        email: this.email,
+        password: this.password,
+      };
+      try {
+        if (this.mode === 'login') {
+          await this.$store.dispatch('login', authPayload);
+        } else {
+          await this.$store.dispatch('signUp', authPayload);
+        }
+      } catch (e) {
+        this.error = e.message || 'Something went wrong, try again later.';
       }
+
+      this.isLoading = false;
     },
     switchMode() {
       if (this.mode === 'login') {
@@ -73,6 +93,9 @@ export default {
       } else {
         this.mode = 'login';
       }
+    },
+    handleError() {
+      this.error = null;
     },
   },
 };
