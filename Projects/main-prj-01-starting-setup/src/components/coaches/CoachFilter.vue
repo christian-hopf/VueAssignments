@@ -6,11 +6,11 @@
       <input type="checkbox" id="frontend" checked @change="setFilter" />
     </span>
     <span class="filter-option"
-      ><label for="Backend">Backend</label>
+      ><label for="backend">Backend</label>
       <input type="checkbox" id="backend" checked @change="setFilter" />
     </span>
     <span class="filter-option"
-      ><label for="Career">Career</label>
+      ><label for="career">Career</label>
       <input type="checkbox" id="career" checked @change="setFilter" />
     </span>
   </base-card>
