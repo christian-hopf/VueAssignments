@@ -14,6 +14,22 @@ export default {
   components: {
     TheHeader,
   },
+  created() {
+    this.$store.dispatch('autoLogin');
+  },
+  computed: {
+    didAutoLogout(){
+      return this.$store.getters.didAutoLogout;
+    }
+  },
+  watch: {
+    didAutoLogout(current, old){
+      // if didAutoLogout changes from false to true
+      if (current && current !== old){
+        this.$router.replace('/coaches');
+      }
+    }
+  },
   data() {
     return {};
   },
@@ -36,21 +52,20 @@ body {
 }
 
 .routes-enter-from,
-.routes-leave-to{
+.routes-leave-to {
   opacity: 0;
   transform: translateY(-30px);
 }
 
-.routes-enter-active{
+.routes-enter-active {
   transition: all 0.3s ease-out;
 }
-.routes-leave-active{
+.routes-leave-active {
   transition: all 0.3s ease-in;
-
 }
 
 .routes-enter-to,
-.routes-leave-from{
+.routes-leave-from {
   opacity: 1;
   transform: translateY(0);
 }

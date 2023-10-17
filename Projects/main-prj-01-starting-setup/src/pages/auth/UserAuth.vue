@@ -81,6 +81,8 @@ export default {
         } else {
           await this.$store.dispatch('signUp', authPayload);
         }
+        const redirect = '/' + (this.$route.query.redirect || '/coaches');
+        this.$router.replace(redirect);
       } catch (e) {
         this.error = e.message || 'Something went wrong, try again later.';
       }
