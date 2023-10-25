@@ -1,3 +1,5 @@
+import STORED_API_KEY from '../../../API_KEY.txt';
+
 let timer;
 
 export default {
@@ -26,11 +28,10 @@ export default {
 
   async auth(context, payload) {
     const mode = payload.mode;
-    let url =
-      'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyC4j6tQr5nyeI934bCAn23Tit6jUxb1PXk';
+    const API_KEY = STORED_API_KEY;
+    let url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
     if (mode === 'signup') {
-      url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyC4j6tQr5nyeI934bCAn23Tit6jUxb1PXk';
+      url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
     }
     const response = await fetch(url, {
       method: 'POST',
